@@ -8,9 +8,14 @@ Run from project root:
 
 Architecture:
     User Input
-        → query_parser.parse_query()       [NL → structured intent]
-        → analytics_engine.run_query()     [intent → computed results]
-        → insight_generator.generate_insight() [results → narrative]
+        → agent.run_agent()                [decides: single-pass or agentic loop]
+             ├─ Single pass:
+             │    query_parser → analytics_engine → insight_generator
+             └─ Agentic loop:
+                  query_parser → analytics_engine (step 1)
+                  → Gemini plans next step
+                  → analytics_engine (step 2..N)
+                  → Gemini synthesises all findings
         → conversation_manager.add_turn()  [update state]
         → ui_components.*                  [render to screen]
 """
@@ -29,10 +34,9 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-from src.query_parser import parse_query
-from src.analytics_engine import run_query
-from src.insight_generator import generate_insight, suggest_followups
+from src.agent import run_agent, format_investigation_trace
 from src.conversation_manager import ConversationManager
+from src.judge import format_judge_badge, get_judge_expander_content
 from app.ui_components import (
     inject_global_css,
     render_header,
@@ -60,8 +64,10 @@ def init_session():
         # messages format: list of dicts with keys:
         # role: "user" | "assistant"
         # content: str
-        # result: dict (analytics result, assistant only)
+        # result: dict (primary analytics result, assistant only)
         # followups: list[str] (assistant only)
+        # mode: "single_pass" | "agentic"
+        # steps: list[dict] (investigation steps, agentic only)
     if "prefilled_query" not in st.session_state:
         st.session_state.prefilled_query = None
 
@@ -70,33 +76,29 @@ def init_session():
 # CORE PROCESSING PIPELINE
 # ---------------------------------------------------------------------------
 
-def process_query(user_input: str) -> tuple[str, dict, list[str]]:
+def process_query(user_input: str) -> tuple[str, dict, list[str], str, list, dict]:
     """
-    Run the full pipeline for a user query.
+    Run the full pipeline for a user query via the agent.
 
     Returns
     -------
-    tuple of (insight_response, analytics_result, followup_suggestions)
+    tuple of (response, primary_result, followups, mode, steps, agent_result)
     """
     cm = st.session_state.cm
-
-    # Step 1: Parse the natural language query
     context = cm.get_context()
-    parsed = parse_query(user_input, conversation_context=context)
 
-    # Step 2: Run analytics computation
-    result = run_query(parsed)
+    agent_result = run_agent(user_input, conversation_context=context)
 
-    # Step 3: Generate narrative insight
-    response = generate_insight(result)
+    response  = agent_result["response"]
+    result    = agent_result["result"]
+    followups = agent_result["followups"]
+    mode      = agent_result["mode"]
+    steps     = agent_result["steps"]
 
-    # Step 4: Generate follow-up suggestions
-    followups = suggest_followups(result)
-
-    # Step 5: Update conversation state
+    parsed = steps[0]["parsed"] if steps else {}
     cm.add_turn(user_input, parsed, result, response)
 
-    return response, result, followups
+    return response, result, followups, mode, steps, agent_result
 
 
 # ---------------------------------------------------------------------------
@@ -116,6 +118,29 @@ def render_history():
             # Show metrics strip for assistant messages
             if msg.get("result") and msg["result"].get("success"):
                 render_metrics_strip(msg["result"])
+
+            # Show judge badge + expander if judge ran
+            verdict = msg.get("verdict", {})
+            if verdict and verdict.get("judge_ran"):
+                badge_html = format_judge_badge(verdict)
+                if badge_html:
+                    st.markdown(
+                        f"<div style='padding: 0 40px;'>{badge_html}</div>",
+                        unsafe_allow_html=True
+                    )
+                with st.expander("⚖️ Quality verification", expanded=False):
+                    st.markdown(get_judge_expander_content(verdict))
+
+            # Show agentic investigation trace if available
+            if msg.get("mode") == "agentic" and msg.get("steps"):
+                trace = format_investigation_trace(msg["steps"])
+                if trace:
+                    with st.expander(
+                        f"🔍 Investigation trace ({len(msg['steps'])} steps)",
+                        expanded=False
+                    ):
+                        st.markdown(trace)
+
             # Show follow-ups only for the last assistant message
             if msg == st.session_state.messages[-1] and msg.get("followups"):
                 render_followup_suggestions(msg["followups"])
@@ -186,7 +211,7 @@ def main():
         with st.spinner(""):
             render_thinking()
             try:
-                response, result, followups = process_query(query)
+                response, result, followups, mode, steps, agent_result = process_query(query)
 
                 # Add assistant response to history
                 st.session_state.messages.append({
@@ -194,6 +219,9 @@ def main():
                     "content": response,
                     "result": result,
                     "followups": followups,
+                    "mode": mode,
+                    "steps": steps,
+                    "verdict": agent_result.get("verdict", {}),
                 })
 
             except Exception as e:
@@ -203,6 +231,8 @@ def main():
                     "content": error_msg,
                     "result": None,
                     "followups": [],
+                    "mode": "single_pass",
+                    "steps": [],
                 })
 
         st.rerun()

@@ -71,6 +71,30 @@ InsightX is a conversational analytics system that allows business leaders to qu
 └──────────────────────────┬──────────────────────────────────┘
                            │ (response, followups)
                            ▼
+┌─────────────────────────────────────────────────────────────┐
+│                      AGENT                  [ORCHESTRATOR]  │
+│   src/agent.py                                              │
+│   • Detects "why" / diagnostic queries                      │
+│   • Single-pass: parser → engine → narrator                 │
+│   • Agentic: runs pandas across all dimensions              │
+│     ranks by explanatory spread, Gemini synthesises         │
+│   • Model: Gemini 3.1 Pro (synthesis)                       │
+└──────────────────────────┬──────────────────────────────────┘
+                           │ response (str)
+                           ▼
+┌─────────────────────────────────────────────────────────────┐
+│                 JUDGE                        [LLM #3]       │
+│   src/judge.py                                              │
+│   • Evaluates: Relevance, Grounding, Calibration, Safety    │
+│   • Scores 1–5 per dimension                                │
+│   • Approves / corrects / appends caveat                    │
+│   • Catches: hallucinated numbers, overclaimed significance,│
+│     fraud language, irrelevant answers                      │
+│   • Model: Gemini 3.1 Pro → falls back to 2.5 Pro           │
+│   • Never blocks user if judge itself fails                 │
+└──────────────────────────┬──────────────────────────────────┘
+                           │ validated response
+                           ▼
                     Back to UI Layer
 ```
 
@@ -108,6 +132,16 @@ The application entry point. Initialises Streamlit session state, wires the full
 
 ### `app/ui_components.py`
 All visual components. Dark terminal aesthetic with amber/gold accents using Bebas Neue (display), Space Mono (metrics), and DM Sans (body). Components include: header bar, welcome screen with sample query chips, user/assistant message bubbles, metrics strip, collapsible data table, follow-up suggestion chips, sidebar with session state display.
+
+### `src/agent.py`
+The orchestration layer. Sits between the query parser and analytics engine. Detects diagnostic or "why" queries via trigger phrase matching and routes them to the agentic loop. The agentic loop runs failure rate analysis across all investigable dimensions deterministically via pandas, ranks dimensions by explanatory spread (negligible / weak / moderate / strong), and passes all findings to Gemini 3.1 Pro for synthesis. Standard queries use the single-pass pipeline unchanged.
+
+Key functions: `run_agent()`, `format_investigation_trace()`
+
+### `src/judge.py`
+The quality validation layer. Every response — single-pass or agentic — passes through the judge before reaching the user. Evaluates Relevance, Grounding, Calibration, and Safety on a 1–5 scale. Automatically corrects responses with critical issues or appends caveats for minor ones. Uses Gemini 3.1 Pro with automatic fallback to 2.5 Pro. Never blocks the user if the judge itself fails — the original response passes through.
+
+Key functions: `judge_response()`, `format_judge_badge()`, `get_judge_expander_content()`
 
 ---
 
@@ -173,11 +207,11 @@ The EDA-derived constants (`OVERALL_FAILURE_RATE = 4.95`, `HIGH_VALUE_THRESHOLD 
 |---|---|---|
 | Language | Python | 3.12 |
 | Data computation | Pandas | 2.x |
-| LLM API | Google Gemini | gemini-2.5-flash |
+| LLM — Parsing & Narration | Gemini 2.5 Flash | gemini-2.5-flash |
+| LLM — Synthesis & Judge | Gemini 3.1 Pro | gemini-3.1-pro-preview |
 | UI framework | Streamlit | Latest |
 | API client | google-genai | Latest |
 | Environment | python-dotenv | Latest |
-
 ---
 
 ## 7. Project Structure
@@ -203,12 +237,14 @@ insightx/
 │   └── 03_insight_validation.ipynb # Output validation
 │
 ├── src/
-│   ├── __init__.py              # Clean top-level imports
+│   ├── __init__.py
 │   ├── data_loader.py           # Data loading, caching, constants
-│   ├── query_parser.py          # NL → structured intent (LLM)
-│   ├── analytics_engine.py      # Deterministic computation (pandas)
-│   ├── insight_generator.py     # Results → narrative (LLM)
-│   └── conversation_manager.py  # Conversation state management
+│   ├── query_parser.py          # NL → intent (Gemini 2.5 Flash)
+│   ├── analytics_engine.py      # All computation (pandas)
+│   ├── insight_generator.py     # Results → narrative (Gemini 2.5 Flash)
+│   ├── conversation_manager.py  # Conversation state
+│   ├── agent.py                 # Agentic execution loop (Gemini 3.1 Pro)
+│   └── judge.py                 # LLM-as-Judge validation (Gemini 3.1 Pro)
 │
 ├── tests/
 │   └── sample_queries.json      # 15 sample queries + responses

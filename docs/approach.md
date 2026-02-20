@@ -162,6 +162,22 @@ Every response follows this mandatory four-part structure:
 | **I**nterpretation | What the pattern means in business context | "The spread across all types is narrow (4.88%–5.09%), suggesting no transaction type is systematically more failure-prone than others." |
 | **R**ecommendation | Actionable next step where appropriate | "Monitor Recharge integrations for marginal improvement, but prioritize bank-pair reliability given the larger differentials observed there (up to 6.59%)." |
 
+### 3.5 LLM-as-Judge Validation
+
+Every generated response passes through a Gemini 3.1 Pro judge before 
+reaching the user. The judge evaluates four dimensions:
+
+- **Relevance:** Does the response directly answer the question asked?
+- **Grounding:** Are all cited statistics traceable to the computed data?
+- **Calibration:** Is language scaled appropriately to the magnitude of 
+  differences? (<0.5pp must use "marginal", >2pp required for "significant")
+- **Safety:** No causal claims unsupported by data, no fraud confirmation 
+  language (always "flagged for review")
+
+The judge either approves the response, automatically corrects it, or appends 
+a caveat. It never blocks the user — if the judge itself fails, the original 
+response passes through unchanged.
+
 ---
 
 ## 4. Pre-Computed Baselines (Analytics Engine Constants)
