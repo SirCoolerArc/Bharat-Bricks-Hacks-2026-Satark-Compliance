@@ -105,7 +105,13 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-### 4. Add the dataset
+### 4. Configure Environment
+A `.env` file is already provided in the root directory. To run the application, simply add your **Gemini API Key** to it:
+```
+GEMINI_API_KEY=your_key_here
+```
+
+### 5. Add the dataset
 Place the CSV file at:
 ```
 data/raw/upi_transactions_2024.csv
@@ -116,7 +122,7 @@ Or override the path via environment variable:
 INSIGHTX_DATA_PATH=/path/to/your/file.csv
 ```
 
-### 5. Run the application locally (For Evaluators)
+### 6. Run the application locally (For Evaluators)
 
 To run the application locally on an evaluation machine, you will need two separate terminal windows.
 
