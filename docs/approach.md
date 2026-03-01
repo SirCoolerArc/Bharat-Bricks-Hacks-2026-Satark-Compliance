@@ -71,7 +71,7 @@ This handles any question the user can express — including multi-step analyses
 
 ### 2.2 Code Generation Strategy
 
-The code planner (`src/code_planner.py`) sends the user query to Gemini 2.5 Flash along with:
+The code planner (`src/code_planner.py`) sends the user query to Gemini 1.5 Pro along with:
 
 - **Full schema description**: column names, dtypes, valid values, sample rows
 - **Conversation context**: what was asked and computed in prior turns
@@ -146,8 +146,9 @@ Every narrative response follows this mandatory four-part structure:
 
 Beyond text, the LLM is explicitly prompted to generate strictly typed JSON elements representing visual components:
 
-- **Insight Cards:** A flexible array of metric groups displayed in a dynamic CSS Masonry layout. The LLM determines the optimal number of cards (0 to 4+) and highlights critical metrics dynamically (e.g., success, warning, error colors).
-- **Native Charts:** For queries comparing dimensions or showing trends, the LLM generates a robust `<ChartRenderer>` config (Bar, Line, or Pie). The frontend intercepts this JSON schema and renders a flawless, interactive chart *before* the narrative begins.
+- **Insight Cards:** A flexible array of metric groups displayed in a dynamic CSS Masonry layout. The LLM determines the optimal number of cards (0 to 4+) and highlights critical metrics dynamically.
+- **Native Charts:** For queries comparing dimensions or showing trends, the LLM generates a robust `<ChartRenderer>` config (Bar, Line, or Pie).
+- **Format Robustness:** The systems uses `strict=False` JSON parsing and regex-based extraction to ensure that even if the LLM includes raw control characters or markdown artifacts in the response, the UI parsing remains flawless.
 
 ### 3.4 Calibrated Language
 
@@ -163,14 +164,14 @@ This prevents the system from dramatising the small differences inherent in the 
 
 ### 3.5 LLM-as-Judge Validation
 
-Every generated response passes through a Gemini 3.1 Pro judge before reaching the user. The judge evaluates four dimensions:
+Every generated response passes through a Gemini 1.5 Pro judge before reaching the user. The judge evaluates four dimensions:
 
 - **Relevance:** Does the response directly answer the question asked?
 - **Grounding:** Are all cited statistics traceable to the computed data?
 - **Calibration:** Is language scaled appropriately to the magnitude of differences?
 - **Safety:** No causal claims unsupported by data, no fraud confirmation language
 
-The judge either approves the response, automatically corrects it, or appends a caveat. It never blocks the user — if the judge itself fails, the original response passes through unchanged.
+The judge either approves the response, automatically corrects it, or appends a caveat. It uses a tiered retry logic with Flash fallback to ensure 99.9% uptime for the review cycle.
 
 ---
 

@@ -215,7 +215,7 @@ export default function ChatInterface() {
                         </button>
                     </div>
                     <div className="text-center mt-3 text-xs text-slate-400 font-medium tracking-wide">
-                        InsightX can make mistakes. Consider verifying important metrics.
+                        BRAIN-DS can make mistakes. Consider verifying important metrics.
                     </div>
                 </form>
             </div>

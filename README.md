@@ -28,11 +28,12 @@ BRAIN-DS is built on a **Code Interpreter** paradigm — the LLM generates code,
 ```
 User Query
     → Next.js UI      [Sends query to FastAPI backend]
-    → Code Planner   [Gemini 2.5 Flash: writes pandas code]
+    → Code Planner   [Gemini 1.5 Pro: writes pandas code]
     → Sandbox         [Executes code safely against DataFrame]
-    → Narrative Gen   [Gemini 2.5 Flash: computes data → D-S-I-R narrative, Cards, and Native Chart JSON]
-    → Judge           [Gemini 3.1 Pro: validates response quality]
-    → Next.js UI      [Chat interface renders animated text, Masonry Insight Cards, and Recharts]
+    → Parallel Tasks  [Orchestrates Narrative, Judge, and Follow-ups concurrently]
+    → Narrative Gen   [Gemini 1.5 Pro: Data → D-S-I-R narrative, Cards, and Charts]
+    → Judge           [Gemini 1.5 Pro: validates accuracy & calibration]
+    → Next.js UI      [Interactive chat renders text and visual cards]
 ```
 
 All statistics come exclusively from pandas executing in a restricted sandbox — the LLM only writes the code and narrates the results.
@@ -58,10 +59,10 @@ insightx/
 │   └── EDA.ipynb                # Exploratory data analysis
 ├── src/
 │   ├── __init__.py
-│   ├── agent.py                 # Orchestrator: generate → execute → narrate
-│   ├── code_planner.py          # LLM code generation & narrative (Gemini 2.5 Flash)
+│   ├── agent.py                 # Orchestrator: parallelizes generate → execute → narrate
+│   ├── code_planner.py          # LLM code generation & narrative (Gemini 1.5 Pro)
 │   ├── sandbox.py               # Restricted code execution environment
-│   ├── judge.py                 # LLM-as-Judge validation (Gemini 3.1 Pro)
+│   ├── judge.py                 # LLM-as-Judge validation (Gemini 1.5 Pro)
 │   ├── data_loader.py           # Data loading, caching, constants
 │   └── conversation_manager.py  # Conversation state & follow-up handling
 ├── tests/
@@ -170,8 +171,8 @@ The application is now accessible at [http://localhost:3000](http://localhost:30
 |---|---|
 | Language | Python 3.12, TypeScript |
 | Data computation | Pandas (in-sandbox execution) |
-| LLM — Code Generation & Narration | Google Gemini 2.5 Flash |
-| LLM — Quality Judge | Google Gemini 3.1 Pro |
+| LLM — Code Generation & Narration | Google Gemini 1.5 Pro |
+| LLM — Quality Judge | Google Gemini 1.5 Pro (w/ 1.5 Flash fallback) |
 | UI | Next.js, Tailwind CSS, Framer Motion |
 | API Layer | FastAPI, Uvicorn |
 | API client | google-genai |
