@@ -431,15 +431,19 @@ CODE EXECUTED:
 {code}
 ```
 
-### PRIMARY ANALYSIS RESULT (from code execution):
+### PRIMARY ANALYSIS RESULT (Data for Narrative):
 {result_summary}
 {stdout_block}
 
 {deep_dive_block}
 
 ---
-Based on the results above, generate the D-S-I-R response. 
-Output ONLY the valid JSON object as defined in the rules."""
+CRITICAL INSTRUCTIONS:
+1. The "PRIMARY ANALYSIS RESULT" above might be in JSON format. Do NOT simply return that JSON.
+2. You must transform that data into a NEW JSON object following the structure: summary, narrative, cards.
+3. Your `narrative` should be a professional, insight-driven D-S-I-R response.
+4. Output ONLY the valid JSON object. No conversational prefix/suffix.
+"""
 
     for attempt in range(2):
         try:
@@ -452,8 +456,9 @@ Output ONLY the valid JSON object as defined in the rules."""
             return json.dumps(parsed) # Return re-serialised clean JSON
         except Exception as e:
             if attempt == 0:
-                # Try once more with a stronger hint
-                prompt += "\n\nCRITICAL: Your previous response failed to parse as JSON. Ensure all quotes are escaped, no trailing commas exist, and all control characters are properly escaped. Return ONLY valid JSON."
+                # Try once more with a stronger hint and the specific error
+                error_hint = f"\n\nCRITICAL: Your previous response failed to parse as JSON. Error: {str(e)}. Ensure all quotes are escaped, no trailing commas exist, and return ONLY valid JSON."
+                prompt += error_hint
                 continue
                 
             import traceback
@@ -529,7 +534,10 @@ def _clean_json_response(raw: str) -> str:
         end_idx = list_end
         
     if start_idx != -1 and end_idx != -1 and end_idx >= start_idx:
-        return text[start_idx:end_idx+1]
+        cleaned = text[start_idx:end_idx+1]
+        # Remove common markdown junk if it leaked into the string
+        cleaned = cleaned.replace("```json", "").replace("```", "").strip()
+        return cleaned
         
     return text
 

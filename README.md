@@ -28,11 +28,11 @@ BRAIN-DS is built on a **Code Interpreter** paradigm — the LLM generates code,
 ```
 User Query
     → Next.js UI      [Sends query to FastAPI backend]
-    → Code Planner   [Gemini 1.5 Pro: writes pandas code]
+    → Code Planner   [Gemini 2.5 Flash: writes pandas code]
     → Sandbox         [Executes code safely against DataFrame]
     → Parallel Tasks  [Orchestrates Narrative, Judge, and Follow-ups concurrently]
-    → Narrative Gen   [Gemini 1.5 Pro: Data → D-S-I-R narrative, Cards, and Charts]
-    → Judge           [Gemini 1.5 Pro: validates accuracy & calibration]
+    → Narrative Gen   [Gemini 2.5 Flash: Data → D-S-I-R narrative, Cards, and Charts]
+    → Judge           [Gemini 2.5 Flash: validates accuracy & calibration]
     → Next.js UI      [Interactive chat renders text and visual cards]
 ```
 
@@ -59,10 +59,10 @@ insightx/
 │   └── EDA.ipynb                # Exploratory data analysis
 ├── src/
 │   ├── __init__.py
-│   ├── agent.py                 # Orchestrator: parallelizes generate → execute → narrate
-│   ├── code_planner.py          # LLM code generation & narrative (Gemini 1.5 Pro)
-│   ├── sandbox.py               # Restricted code execution environment
-│   ├── judge.py                 # LLM-as-Judge validation (Gemini 1.5 Pro)
+│    ├── agent.py                 # Orchestrator: parallelizes generate → execute → narrate
+    ├── code_planner.py          # LLM code generation & narrative (Gemini 2.5 Flash)
+    ├── sandbox.py               # Restricted code execution environment
+    ├── judge.py                 # LLM-as-Judge validation (Gemini 2.5 Flash)
 │   ├── data_loader.py           # Data loading, caching, constants
 │   └── conversation_manager.py  # Conversation state & follow-up handling
 ├── tests/
@@ -171,8 +171,8 @@ The application is now accessible at [http://localhost:3000](http://localhost:30
 |---|---|
 | Language | Python 3.12, TypeScript |
 | Data computation | Pandas (in-sandbox execution) |
-| LLM — Code Generation & Narration | Google Gemini 1.5 Pro |
-| LLM — Quality Judge | Google Gemini 1.5 Pro (w/ 1.5 Flash fallback) |
+| LLM — Code Generation & Narration | Google Gemini 2.5 Flash |
+| LLM — Quality Judge | Google Gemini 2.5 Flash |
 | UI | Next.js, Tailwind CSS, Framer Motion |
 | API Layer | FastAPI, Uvicorn |
 | API client | google-genai |
@@ -208,6 +208,7 @@ Abhijeet Singh | 24B2468 <br>
 
 - **Data privacy:** The dataset is synthetic and does not contain real user data.
 - **Fraud flags:** `fraud_flag = 1` means flagged for automated review, not confirmed fraud.
-- **API costs:** Standard queries make 3 Gemini API calls (code generation, narration, judge). The validate-and-refine step adds a 4th call when needed. Error retries add fix_code calls.
+- **API costs:** Standard queries-   **AI Core**: Gemini 2.5 Flash (for code generation, insight narration, and quality judging).
+ The validate-and-refine step adds a 4th call when needed. Error retries add fix_code calls.
 - **Rate limits:** If you hit API quota limits during development, the system has built-in retry-with-backoff logic for 429 errors.
 - **Sandbox security:** LLM-generated code runs in a restricted environment with whitelisted builtins only — no file I/O, no network, no imports, 30-second timeout.

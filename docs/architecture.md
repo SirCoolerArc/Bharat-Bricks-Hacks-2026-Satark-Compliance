@@ -42,16 +42,15 @@ BRAIN-DS is a conversational analytics system that allows business leaders to qu
 └──────────────────────────┬──────────────────────────────────┘
                            │ user_query + schema + context
                            ▼
-┌─────────────────────────────────────────────────────────────┐
-│                  CODE PLANNER                   [LLM #1]    │
-│   src/code_planner.py                                       │
-│   • generate_analysis_code() — Gemini writes pandas code    │
-│   • fix_code() — LLM corrects code that errored             │
-│   • validate_and_refine() — checks output answers question  │
-│   • generate_narrative() — D-S-I-R narrative, KPI Cards,    │
-│                            and Native Chart JSON            │
-│   • Model: Gemini 1.5 Pro                                   │
-└──────────────────────────┬──────────────────────────────────┘
+┌───────────────────────────────────────────────────────────────┐
+│                  CODE PLANNER                   [LLM #1]      │
+│   src/code_planner.py                                         │
+│   • generate_analysis_code() — Gemini writes pandas code      │
+│   • fix_code() — LLM corrects code that errored               │
+│   • validate_and_refine() — checks output answers question    │
+│   • Choice of chart type (bar/line/pie) based on query context│
+│   • Model: Gemini 2.5 Flash                                   │
+└──────────────────────────┬────────────────────────────────────┘
                            │ generated Python code (str)
                            ▼
 ┌─────────────────────────────────────────────────────────────┐
@@ -74,13 +73,13 @@ BRAIN-DS is a conversational analytics system that allows business leaders to qu
 ┌─────────────────────────────────────────────────────────────┐
 │          PARALLEL ORCHESTRATION LAYER      [THREADS]        │
 │   src/agent.py                                              │
-│   • Concurrent execution of Narrative, Judge, and Followups  │
+│   • Concurrent execution of Narrative, Judge, and Followups │
 │   • Sub-second latency for complex review cycles            │
 └──────────────┬───────────────┬────────────────┬─────────────┘
                │               │                │
 ┌──────────────▼───────┐┌──────▼────────┐┌──────▼────────┐
-│ NARRATIVE GEN        ││ JUDGE (LLM #2) ││ FOLLOWUPS GEN │
-│ Gemini 1.5 Pro       ││ Gemini 1.5 Pro ││ Gemini 1.5 Pro │
+│    NARRATIVE GEN     ││ JUDGE (LLM #2) │ FOLLOWUPS GEN │
+│   Gemini 2.5 Flash   ││Gemini 2.5 Flash│Gemini 2.5 Flash│
 └──────────────┬───────┘└──────┬────────┘└──────┬────────┘
                │               │                │
                └───────────────┴────────────────┘
@@ -109,7 +108,7 @@ The security layer. Executes LLM-generated pandas code in a restricted environme
 Key functions: `execute_code()`, `format_result_for_display()`, `_make_json_safe()`
 
 ### `src/judge.py`
-The quality validation layer. Every response passes through the judge before reaching the user. Evaluates Relevance, Grounding, Calibration, and Safety on a 1–5 scale. Automatically corrects responses with critical issues or appends caveats for minor ones. Uses a tiered model approach: Gemini 1.5 Pro with automatic fallback to 1.5 Flash. Optimization includes a 2-second retry backoff for maximum reliability.
+The quality validation layer. Every response passes through the judge before reaching the user. Evaluates Relevance, Grounding, Calibration, Safety, and Logical Integrity (Anti-Sycophancy). Automatically corrects responses with critical issues or appends caveats for minor ones. Uses **Gemini 2.5 Flash** for high-reasoning evaluation.
 
 Key functions: `judge_response()`, `format_judge_badge()`, `get_judge_expander_content()`
 
@@ -203,9 +202,9 @@ FastAPI maintains application state in memory across requests. Without caching, 
 |---|---|---|
 | Language | Python | 3.12 |
 | Data computation | Pandas | 2.x |
-| LLM — Code Generation & Narration | Gemini 1.5 Pro | gemini-1.5-pro |
-| LLM — Judge | Gemini 1.5 Pro | gemini-1.5-pro |
-| LLM — Judge Fallback | Gemini 1.5 Flash | gemini-1.5-flash |
+| LLM — Code Generation & Narration | Gemini 2.5 Flash | gemini-2.5-flash |
+| LLM — Judge | Gemini 2.5 Flash | gemini-2.5-flash |
+| LLM — Judge Fallback | Gemini 2.5 Flash | gemini-2.5-flash |
 | UI framework | Next.js (React) | 14.x |
 | Backend API framework | FastAPI | Latest |
 | API Server | Uvicorn | Latest |
@@ -239,10 +238,10 @@ insightx/
 │
 ├── src/
 │   ├── __init__.py
-│   ├── agent.py                 # Orchestrator: generate → execute → narrate
+│   ├── agent.py                 # Orchestrator: parallelizes generate → execute → narrate
 │   ├── code_planner.py          # LLM code generation & narrative (Gemini 2.5 Flash)
 │   ├── sandbox.py               # Restricted code execution environment
-│   ├── judge.py                 # LLM-as-Judge validation (Gemini 3.1 Pro)
+│   ├── judge.py                 # LLM-as-Judge validation (Gemini 2.5 Flash)
 │   ├── data_loader.py           # Data loading, caching, constants
 │   └── conversation_manager.py  # Conversation state & follow-up handling
 │

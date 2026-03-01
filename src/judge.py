@@ -44,10 +44,10 @@ load_dotenv()
 _client = genai.Client(api_key=os.environ.get("GEMINI_API_KEY"))
 
 # Best model for evaluation — needs strongest reasoning
-JUDGE_MODEL = "gemini-1.5-pro"
+JUDGE_MODEL = "gemini-2.5-flash"
 
 # Fallback if judge model is unavailable
-FALLBACK_MODEL = "gemini-1.5-flash"
+FALLBACK_MODEL = "gemini-2.5-flash"
 
 
 # ---------------------------------------------------------------------------
