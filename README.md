@@ -55,9 +55,7 @@ insightx/
 │   ├── approach.md              # Query understanding & methodology
 │   └── architecture.md          # Full system architecture
 ├── notebooks/
-│   ├── 01_eda.ipynb             # Exploratory data analysis
-│   ├── 02_query_patterns.ipynb  # Parser testing
-│   └── 03_insight_validation.ipynb
+│   └── EDA.ipynb                # Exploratory data analysis
 ├── src/
 │   ├── __init__.py
 │   ├── agent.py                 # Orchestrator: generate → execute → narrate
@@ -65,16 +63,12 @@ insightx/
 │   ├── sandbox.py               # Restricted code execution environment
 │   ├── judge.py                 # LLM-as-Judge validation (Gemini 3.1 Pro)
 │   ├── data_loader.py           # Data loading, caching, constants
-│   ├── conversation_manager.py  # Conversation state & follow-up handling
-│   ├── query_parser.py          # [Legacy] NL → intent parser
-│   ├── analytics_engine.py      # [Legacy] Deterministic computation
-│   └── insight_generator.py     # [Legacy] Results → narrative
+│   └── conversation_manager.py  # Conversation state & follow-up handling
 ├── tests/
 │   ├── sample_queries.json      # 15 sample queries + responses
 │   ├── test_e2e.py              # End-to-end pipeline tests
-│   ├── test_sandbox.py          # Sandbox security tests
-│   └── test_reproduce.py        # Reproducibility tests
-├── .env.example                 # API key template
+│   └── test_sandbox.py          # Sandbox security tests
+├── .env                         # API keys
 ├── requirements.txt
 └── README.md
 ```

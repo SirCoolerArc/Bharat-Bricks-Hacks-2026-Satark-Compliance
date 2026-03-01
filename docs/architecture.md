@@ -134,15 +134,6 @@ The memory layer. Maintains conversation state as a `Turn` dataclass list. Track
 
 Key functions: `ConversationManager.add_turn()`, `.get_context()`, `.get_history()`, `.reset()`
 
-### `src/query_parser.py`
-Legacy intent parser. Sends the user's query to Gemini to extract structured JSON intent (intent type, entities, metrics, filters). Used by the analytics engine for structured computation. Retained in the codebase as a fallback path.
-
-### `src/analytics_engine.py`
-Legacy computation engine. Contains six deterministic compute functions dispatched by intent type (descriptive, comparative, temporal, segmentation, correlation, risk). All computation uses pandas. Retained in the codebase as a fallback path.
-
-### `src/insight_generator.py`
-Legacy narrative generator. Receives analytics results and produces D-S-I-R narratives via Gemini. Retained in the codebase as a fallback path.
-
 ### `api/main.py`
 The FastAPI application entry point. Receives POST requests from the Next.js frontend, manages conversation state context per session, routes the query into `run_agent()`, and returns standard JSON responses.
 
@@ -255,9 +246,7 @@ insightx/
 │   └── architecture.md          # This document
 │
 ├── notebooks/
-│   ├── 01_eda.ipynb             # Exploratory data analysis
-│   ├── 02_query_patterns.ipynb  # Parser testing
-│   └── 03_insight_validation.ipynb # Output validation
+│   └── EDA.ipynb                # Exploratory data analysis
 │
 ├── src/
 │   ├── __init__.py
@@ -266,19 +255,14 @@ insightx/
 │   ├── sandbox.py               # Restricted code execution environment
 │   ├── judge.py                 # LLM-as-Judge validation (Gemini 3.1 Pro)
 │   ├── data_loader.py           # Data loading, caching, constants
-│   ├── conversation_manager.py  # Conversation state & follow-up handling
-│   ├── query_parser.py          # [Legacy] NL → intent (Gemini 2.5 Flash)
-│   ├── analytics_engine.py      # [Legacy] Deterministic computation (pandas)
-│   └── insight_generator.py     # [Legacy] Results → narrative (Gemini 2.5 Flash)
+│   └── conversation_manager.py  # Conversation state & follow-up handling
 │
 ├── tests/
 │   ├── sample_queries.json      # 15 sample queries + responses
 │   ├── test_e2e.py              # End-to-end pipeline tests
-│   ├── test_sandbox.py          # Sandbox security & execution tests
-│   └── test_reproduce.py        # Reproducibility tests
+│   └── test_sandbox.py          # Sandbox security & execution tests
 │
-├── .env                         # API keys (gitignored)
-├── .env.example                 # Key template for teammates
+├── .env                         # API keys
 ├── .gitignore
 ├── requirements.txt
 └── README.md
