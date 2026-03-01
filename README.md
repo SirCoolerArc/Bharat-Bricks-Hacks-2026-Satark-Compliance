@@ -79,13 +79,12 @@ insightx/
 
 ### Prerequisites
 - Python 3.10+
-- A Google Gemini API key ([get one here](https://aistudio.google.com/app/apikey))
 - The dataset CSV placed at `data/raw/upi_transactions_2024.csv`
 
 ### 1. Clone the repository
 ```bash
-git clone https://github.com/<SirCoolerArc>/insightx.git
-cd insightx
+git clone https://github.com/SirCoolerArc/InsightX.git
+cd InsightX
 ```
 
 ### 2. Create and activate a virtual environment
@@ -105,16 +104,7 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-### 4. Set up your API key
-```bash
-# Copy the template
-cp .env.example .env
-
-# Open .env and add your key
-GEMINI_API_KEY=your_actual_key_here
-```
-
-### 5. Add the dataset
+### 4. Add the dataset
 Place the CSV file at:
 ```
 data/raw/upi_transactions_2024.csv
@@ -125,7 +115,7 @@ Or override the path via environment variable:
 INSIGHTX_DATA_PATH=/path/to/your/file.csv
 ```
 
-### 6. Run the application locally (For Evaluators)
+### 5. Run the application locally (For Evaluators)
 
 To run the application locally on an evaluation machine, you will need two separate terminal windows.
 
