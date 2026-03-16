@@ -66,10 +66,10 @@ insightx/
 │   └── EDA.ipynb                # Exploratory data analysis
 ├── src/
 │   ├── __init__.py
-│    ├── agent.py                 # Orchestrator: parallelizes generate → execute → narrate
-    ├── code_planner.py          # LLM code generation & narrative (Gemini 2.5 Flash)
-    ├── sandbox.py               # Restricted code execution environment
-    ├── judge.py                 # LLM-as-Judge validation (Gemini 2.5 Flash)
+│   ├── agent.py                 # Orchestrator: parallelizes generate → execute → narrate
+│   ├── code_planner.py          # LLM code generation & narrative (Gemini 2.5 Flash)
+│   ├── sandbox.py               # Restricted code execution environment
+│   ├── judge.py                 # LLM-as-Judge validation (Gemini 2.5 Flash)
 │   ├── data_loader.py           # Data loading, caching, constants
 │   └── conversation_manager.py  # Conversation state & follow-up handling
 ├── tests/

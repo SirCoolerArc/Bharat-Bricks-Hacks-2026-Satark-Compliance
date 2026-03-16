@@ -10,13 +10,13 @@ Unlike standard LLM chatbots, BRAIN-DS utilizes a **Code-Interpreter Paradigm** 
 ## 2. System Architecture Diagram
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│                    NEXT.JS UI LAYER (Premium)               │
-│   frontend/src/                frontend/components/         │
+┌──────────────────────────────────────────────────────────────┐
+│                    NEXT.JS UI LAYER (Premium)                │
+│   frontend/src/                frontend/components/          │
 │   • Tailwind CSS styling       • ChartRenderer.tsx (Recharts)│
-│   • Framer Motion              • Masonry KPI Grid           │
-│   • Investigation Trace        • Dynamic Followups          │
-└──────────────────────────┬──────────────────────────────────┘
+│   • Framer Motion              • Masonry KPI Grid            │
+│   • Investigation Trace        • Dynamic Followups           │
+└──────────────────────────┬───────────────────────────────────┘
                            │ POST /api/query
                            ▼
 ┌─────────────────────────────────────────────────────────────┐
@@ -28,41 +28,41 @@ Unlike standard LLM chatbots, BRAIN-DS utilizes a **Code-Interpreter Paradigm** 
 └──────────────────────────┬──────────────────────────────────┘
                            │ user_query (str)
                            ▼
-┌─────────────────────────────────────────────────────────────┐
-│              PARALLEL AGENTIC ORCHESTRATOR                  │
-│   src/agent.py                                              │
-│   • Multi-stage Parallel Execution (7+ Gemini API calls)    │
+┌──────────────────────────────────────────────────────────────┐
+│              PARALLEL AGENTIC ORCHESTRATOR                   │
+│   src/agent.py                                               │
+│   • Multi-stage Parallel Execution (7+ Gemini API calls)     │
 │   • Stage 1: Parallel Generation (Main + Proactive Deep Dive)│
-│   • Stage 2: Narrative Synthesis                            │
-│   • Stage 3: Parallel Validation (LLM Judge + Followups)    │
-└────────┬───────────────────────────────┬────────────────────┘
+│   • Stage 2: Narrative Synthesis                             │
+│   • Stage 3: Parallel Validation (LLM Judge + Followups)     │
+└────────┬───────────────────────────────┬─────────────────────┘
          │                               │
          ▼                               ▼
-┌───────────────────────┐       ┌───────────────────────┐
-│ MAIN ANALYST (Agent #1) │       │ DEEP DIVE (Agent #3)    │
-│ Code Generation       │       │ Proactive Research    │
-└────────┬──────────────┘       └────────┬──────────────┘
-         │                               │
-         ▼                               ▼
-┌───────────────────────┐       ┌───────────────────────┐
-│ VALIDATOR (Agent #2)    │       │ VALIDATOR (Agent #4)    │
-│ Semantic Check        │       │ Correlation Check     │
-└────────┬──────────────┘       └────────┬──────────────┘
-         │                               │
-         └───────────────┬───────────────┘
+┌────────────────────────┐       ┌────────────────────────┐
+│ MAIN ANALYST (Agent #1)│       │ DEEP DIVE (Agent #3)   │
+│ Code Generation        │       │ Proactive Research     │
+└────────┬───────────────┘       └────────┬───────────────┘
+         │                                │
+         ▼                                ▼
+┌────────────────────────┐       ┌────────────────────────┐
+│ VALIDATOR (Agent #2)   │       │ VALIDATOR (Agent #4)   │
+│ Semantic Check         │       │ Correlation Check      │
+└────────┬───────────────┘       └────────┬───────────────┘
+         │                                │
+         └───────────────┬────────────────┘
                          ▼
 ┌─────────────────────────────────────────────────────────────┐
-│             D-S-I-R NARRATIVE ARCHITECT (Agent #5)            │
+│             D-S-I-R NARRATIVE ARCHITECT (Agent #5)          │
 │   src/code_planner.py -> generate_narrative()               │
 │   • Weaves main data and research into executive insight    │
-└────────────────────────┬────────────────────────────────────┘
-                         │
+└─────────────────────────┬───────────────────────────────────┘
+                          │
           ┌───────────────┴───────────────┐
           ▼                               ▼
- ┌────────────────────────┐       ┌────────────────────────┐
- │   LLM-AS-JUDGE (Agent #6)│       │  FOLLOW-UP GEN (Agent #7)│
- │   5-Dimensional Audit  │       │  Contextual Prediction │
- └────────────────────────┘       └────────────────────────┘
+ ┌────────────────────────┐       ┌─────────────────────────┐
+ │ LLM-AS-JUDGE (Agent #6)│       │ FOLLOW-UP GEN (Agent #7)│
+ │ 5-Dimensional Audit    │       │ Contextual Prediction   │
+ └────────────────────────┘       └─────────────────────────┘
                           │                 │
                           └────────┬────────┘
                                    ▼
