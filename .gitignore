@@ -1,0 +1,13 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Virtual env
+.venv/
+
+# Data (IMPORTANT)
+satark_data/
+
+# OS
+.DS_Store
