@@ -38,7 +38,7 @@ graph TD
         Router{Layer 1: Unified Router}
         AgentA[Layer 2A: Analytics Agent]
         AgentB[Layer 2B: Regulatory Agent]
-        Synthesizer[[Layer 3: Gemini 1.5 Flash Synthesizer]]
+        Synthesizer[[Layer 3: Gemini 2.5 Flash Synthesizer]]
     end
 
     subgraph KnowledgeBase ["Zone 3: Multi-Modal Knowledge Base"]
@@ -75,7 +75,7 @@ graph TD
 2.  **Layer 2 (Specialized Agents)**: 
     - **Zone A**: Accesses 5 specialized Gold tables (Geo Heatmap, Risk Distribution, Alert Effectiveness, etc.).
     - **Zone B**: Performs sub-second vector search across indexed RBI Master Directions.
-3.  **Layer 3 (Synthesizer)**: Uses **Gemini 1.5 Flash** to synthesize agent metadata into a final, citation-backed response.
+3.  **Layer 3 (Synthesizer)**: Uses **Gemini 2.5 Flash** to synthesize agent metadata into a final, citation-backed response.
 
 ---
 
@@ -96,7 +96,7 @@ While the **Bharat Bricks Hackathon** primary requirement involves Databricks, w
 
 - **Frontend**: Next.js 14, React, Tailwind CSS, Recharts (Modern Dashboard Aesthetics).
 - **Backend**: FastAPI (Python), Uvicorn.
-- **AI/ML**: Google Gemini 1.5 Flash, Sentence Transformers (All-MiniLM-L6-v2).
+- **AI/ML**: Google Gemini 2.5 Flash, Sentence Transformers (All-MiniLM-L6-v2).
 - **Data**: Databricks (SQL Warehouse), ChromaDB (Vector Store).
 - **Compliance Source**: 8+ RBI Master Directions on UPI/Digital Payments.
 
