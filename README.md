@@ -2,7 +2,7 @@
 
 **SATARK** (सर्तक - *Vigilant*) is an AI-powered compliance and fraud intelligence dashboard built for the **Bharat Bricks Hackathon 2026**. It empowers Indian bank compliance officers and RBI regulators with real-time insights into over 150,000+ UPI transactions and 5,000+ regulatory complaints.
 
-![Project Preview](file:///C:/Users/Rishabh%20Kumar/.gemini/antigravity/brain/c074e07d-f4f6-47ba-a2c7-2a4fb1c3ad5c/test_dashboard_fixed_1774765787788.webp) (Replace with hosted image if available)
+![Project Preview](screenshots/Satark.png)
 
 ## 🚀 Overview
 
