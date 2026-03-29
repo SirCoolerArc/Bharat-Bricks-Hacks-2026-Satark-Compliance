@@ -21,9 +21,9 @@ yarn-error.log*
 .env.*.local
 *.pem
 
-# --- Database & RAG ---
-satark/backend/data/chroma_db/
-backend/data/chroma_db/
+# --- Database & RAG (Allowed for Vercel baking) ---
+# satark/api/data/chroma_db/ is intentionally UNIGNORED for deployment
+# satark/backend/data/chroma_db/ is intentionally UNIGNORED for deployment
 
 # --- OS Specific ---
 .DS_Store
