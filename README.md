@@ -110,4 +110,15 @@ Once the app is running, here is how to demo the core features:
 1. Navigate to the **Relief** tab.
 2. Go through the multi-step wizard to automatically generate a formal bank complaint letter based on your transaction details.
 
+### 🛠️ Strategic Engineering Decision: Why Next.js?
+
+While the *Bharat Bricks Hackathon* primary requirement involves Databricks, we made a strategic engineering decision to build our frontend using *Next.js* and *FastAPI* instead of native Databricks Lakehouse Apps. 
+
+### Key Blockers for Native Databricks Frontends:
+*   ❌ *Compute Dependency*: Databricks Lakehouse Apps require an active, attached cluster, which leads to significant and unnecessary cost overhead for simple visualization tasks.
+*   ❌ *Limited Framework Support: Current support is primarily focused on **Streamlit/Gradio*. While excellent for internal ML experimentation, they lack the production-grade flexibility, performance, and custom UI/UX required for a state-of-the-art compliance dashboard.
+*   ❌ *Authentication & Portability: Databricks identity management is optimized for internal organizational tools. Moving to a standalone **Vercel + Google Gemini* stack allows for a more portable, public-facing, and lightweight deployment suited for rapid regulatory intervention.
+
+*Integrated Approach: We still leverage **Databricks SQL Warehouses* as our core source of truth for the Gold Tables via the *Databricks SQL Connector*, ensuring we maintain the power of the Lakehouse while providing a premium, independent user experience.
+
 
