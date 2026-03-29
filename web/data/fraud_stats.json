@@ -1,0 +1,6 @@
+{
+  "fraud_rate": 7.2,
+  "top_scam_type": "KYC Update Impersonation",
+  "recent_pattern": "Scammers are increasingly sending fake electricity bill disconnection messages.",
+  "high_risk_states": ["Delhi", "Maharashtra", "West Bengal", "Uttar Pradesh"]
+}

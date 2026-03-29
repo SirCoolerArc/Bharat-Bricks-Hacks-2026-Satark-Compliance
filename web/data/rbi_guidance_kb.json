@@ -1,0 +1,25 @@
+{
+  "default_response": "I can help you with:\n• **Report fraud**: Steps to file a complaint after a UPI scam\n• **Refund process**: RBI guidelines on liability and refund timelines\n• **KYC scams**: How to identify fake KYC verification demands\n• **UPI safety**: Best practices for safe UPI transactions\n\nAsk me about any of these topics, or describe your situation and I'll guide you.",
+  "entries": [
+    {
+      "keywords": ["report", "complaint", "file", "fir", "police"],
+      "response": "According to RBI guidelines, you should:\n1. Report the fraud to your bank within 3 working days\n2. File an FIR at the nearest police station or on cybercrime.gov.in\n3. Lodge a complaint on the NPCI dispute redressal portal\n4. Your bank must resolve the complaint within 90 days (RBI circular 2017)\n5. If unresolved, escalate to the Banking Ombudsman"
+    },
+    {
+      "keywords": ["refund", "money back", "liability", "return"],
+      "response": "Under RBI's Circular on Limiting Liability (2017):\n• If you report within 3 days: zero liability (bank bears full loss)\n• If you report within 4–7 days: liability capped at ₹25,000\n• After 7 days: liability as per bank policy\n• The bank must provisionally credit the amount within 10 working days of complaint"
+    },
+    {
+      "keywords": ["kyc", "verification", "aadhaar", "pan"],
+      "response": "RBI has clarified:\n• Banks and institutions may request KYC updates, but they NEVER charge a fee via UPI\n• No penalty is levied for delayed KYC — services may be temporarily limited\n• If someone demands money for KYC, it is a scam\n• Report such messages to your bank and to CERT-In"
+    },
+    {
+      "keywords": ["upi", "pin", "qr", "safe"],
+      "response": "UPI safety tips from RBI and NPCI:\n• Never share your UPI PIN with anyone\n• Only scan QR codes to PAY, not to receive money\n• Set transaction limits on your UPI app\n• Enable app lock and device lock\n• Report suspicious VPAs via your UPI app's \"Report\" feature"
+    },
+    {
+      "keywords": ["invest", "crypto", "trading", "stock", "forex"],
+      "response": "SEBI and RBI warnings on investment fraud:\n• Only invest through SEBI-registered intermediaries\n• No legitimate platform guarantees returns\n• \"Withdrawal fees\" on trading/crypto platforms are a red flag\n• Verify any platform on SEBI's website before investing\n• Report investment fraud to SEBI's SCORES portal"
+    }
+  ]
+}

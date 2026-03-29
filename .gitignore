@@ -11,3 +11,11 @@ satark_data/
 
 # OS
 .DS_Store
+# Next.js
+web/.next/
+web/node_modules/
+web/.env.local
+web/.env.production
+web/.env.development
+web/*.log
+web/out/

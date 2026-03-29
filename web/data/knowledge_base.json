@@ -1,0 +1,26 @@
+[
+  {
+    "category": "Reporting",
+    "keywords": ["scam", "scammed", "hacked", "stolen", "lost", "report", "money back", "police", "help", "cybercrime"],
+    "text": "If you are a victim of financial fraud, immediately call the National Cyber Crime Helpline at 1930. You should also file a complaint at cybercrime.gov.in. Notify your bank within 3 days to limit your liability under RBI guidelines.",
+    "source": "RBI Guidelines"
+  },
+  {
+    "category": "KYC Fraud",
+    "keywords": ["kyc", "block", "freeze", "account suspended", "penalty", "verification"],
+    "text": "Banks and payment apps will never ask you to complete KYC over an SMS or WhatsApp link, nor will they ask you to download remote access apps (like AnyDesk or TeamViewer). Ignore urgent messages claiming your account will be blocked.",
+    "source": "RBI Public Awareness"
+  },
+  {
+    "category": "Refund & Liability",
+    "keywords": ["refund", "money back", "liability", "compensate", "return"],
+    "text": "Under RBI guidelines, if you suffer a loss due to unauthorized electronic banking transactions and report it to your bank within 3 working days, you have zero liability. If reported between 4-7 working days, your liability is limited to a maximum of ₹25,000 depending on the account type.",
+    "source": "RBI Circular regarding Zero Liability"
+  },
+  {
+    "category": "General Safety",
+    "keywords": ["safe", "protect", "secure", "pin", "otp", "password"],
+    "text": "Never share your UPI PIN, OTP, CVV, or passwords with anyone, including bank officials or customer care. Remember: UPI PIN is only required to *send* money, never to *receive* money.",
+    "source": "NPCI UPI Safety Guidelines"
+  }
+]
