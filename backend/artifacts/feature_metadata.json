@@ -1,0 +1,209 @@
+{
+  "version": "1.0",
+  "model_id": "model_b_no_device_dominance",
+  "model_type": "XGBoost",
+  "framework": "xgboost",
+  "n_features": 22,
+  "feature_names": [
+    "remark_fraud_score",
+    "remark_length",
+    "remark_is_empty",
+    "remark_has_kyc_keyword",
+    "remark_has_penalty_keyword",
+    "remark_has_prize_keyword",
+    "remark_has_emergency_keyword",
+    "velocity_1h",
+    "velocity_24h",
+    "amount_zscore_30d",
+    "is_new_device",
+    "is_night_txn",
+    "time_hour_sin",
+    "time_hour_cos",
+    "is_vpn_flag",
+    "recipient_vpa_age_days",
+    "recipient_fan_in_7d",
+    "recipient_kyc_level",
+    "recipient_cumulative_30d",
+    "is_first_txn_to_recipient",
+    "amount_numeric",
+    "txn_hour"
+  ],
+  "features": [
+    {
+      "index": 0,
+      "name": "remark_fraud_score",
+      "type": "float",
+      "range": [
+        0,
+        1
+      ],
+      "desc": "Keyword-based fraud score"
+    },
+    {
+      "index": 1,
+      "name": "remark_length",
+      "type": "int",
+      "range": [
+        0,
+        500
+      ],
+      "desc": "Remark text length"
+    },
+    {
+      "index": 2,
+      "name": "remark_is_empty",
+      "type": "bool",
+      "desc": "Empty remark flag"
+    },
+    {
+      "index": 3,
+      "name": "remark_has_kyc_keyword",
+      "type": "int",
+      "desc": "KYC keyword present"
+    },
+    {
+      "index": 4,
+      "name": "remark_has_penalty_keyword",
+      "type": "int",
+      "desc": "Penalty keyword present"
+    },
+    {
+      "index": 5,
+      "name": "remark_has_prize_keyword",
+      "type": "int",
+      "desc": "Prize keyword present"
+    },
+    {
+      "index": 6,
+      "name": "remark_has_emergency_keyword",
+      "type": "int",
+      "desc": "Emergency keyword present"
+    },
+    {
+      "index": 7,
+      "name": "velocity_1h",
+      "type": "int",
+      "range": [
+        0,
+        100
+      ],
+      "desc": "Txns in last 1h"
+    },
+    {
+      "index": 8,
+      "name": "velocity_24h",
+      "type": "int",
+      "range": [
+        0,
+        1000
+      ],
+      "desc": "Txns in last 24h"
+    },
+    {
+      "index": 9,
+      "name": "amount_zscore_30d",
+      "type": "float",
+      "desc": "Amount z-score (30d)"
+    },
+    {
+      "index": 10,
+      "name": "is_new_device",
+      "type": "int",
+      "desc": "New device flag"
+    },
+    {
+      "index": 11,
+      "name": "is_night_txn",
+      "type": "int",
+      "desc": "Night transaction (10pm-6am)"
+    },
+    {
+      "index": 12,
+      "name": "time_hour_sin",
+      "type": "float",
+      "range": [
+        -1,
+        1
+      ],
+      "desc": "Hour sine encoding"
+    },
+    {
+      "index": 13,
+      "name": "time_hour_cos",
+      "type": "float",
+      "range": [
+        -1,
+        1
+      ],
+      "desc": "Hour cosine encoding"
+    },
+    {
+      "index": 14,
+      "name": "is_vpn_flag",
+      "type": "int",
+      "desc": "VPN detected"
+    },
+    {
+      "index": 15,
+      "name": "recipient_vpa_age_days",
+      "type": "int",
+      "range": [
+        0,
+        3650
+      ],
+      "desc": "Recipient VPA age (days)"
+    },
+    {
+      "index": 16,
+      "name": "recipient_fan_in_7d",
+      "type": "int",
+      "range": [
+        0,
+        1000
+      ],
+      "desc": "Unique senders (7d, mule signal)"
+    },
+    {
+      "index": 17,
+      "name": "recipient_kyc_level",
+      "type": "int",
+      "range": [
+        0,
+        2
+      ],
+      "desc": "KYC level (0/1/2)"
+    },
+    {
+      "index": 18,
+      "name": "recipient_cumulative_30d",
+      "type": "float",
+      "desc": "Total received (30d)"
+    },
+    {
+      "index": 19,
+      "name": "is_first_txn_to_recipient",
+      "type": "int",
+      "desc": "First-time recipient"
+    },
+    {
+      "index": 20,
+      "name": "amount_numeric",
+      "type": "float",
+      "range": [
+        1,
+        100000
+      ],
+      "desc": "Amount (INR)"
+    },
+    {
+      "index": 21,
+      "name": "txn_hour",
+      "type": "int",
+      "range": [
+        0,
+        23
+      ],
+      "desc": "Hour of day (0-23)"
+    }
+  ]
+}
