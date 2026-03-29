@@ -18,7 +18,6 @@ graph TD
         UI[User Interface]
         Protect[🛡️ /protect - Risk Checker]
         Learn[📚 /learn - AI Chatbot]
-        Dash[📊 /dashboard - Analytics]
         Relief[📝 /relief - Complaints]
     end
 
@@ -35,7 +34,6 @@ graph TD
     %% Connections
     UI --> Protect
     UI --> Learn
-    UI --> Dash
     UI --> Relief
 
     Protect -- "Transaction Data via POST /predict" --> API
@@ -112,6 +110,4 @@ Once the app is running, here is how to demo the core features:
 1. Navigate to the **Relief** tab.
 2. Go through the multi-step wizard to automatically generate a formal bank complaint letter based on your transaction details.
 
-### 4. View Insights (`/dashboard`)
-1. Navigate to the **Dashboard** tab.
-2. View the offline mock UI demonstrating how the platform visualizes real-time metrics, geographical risk maps, and scam breakdowns for administrators.
+
