@@ -1,224 +1,151 @@
-# ⚡ BRAIN-DS — Leadership Analytics
+# 🛡️ SATARK: Compliance Intelligence for UPI Fraud
 
-> Conversational analytics for digital payments data.  
-> Ask questions in plain English. Get executive-grade insights backed by real computation.
+**SATARK** (सर्तक - *Vigilant*) is an AI-powered compliance and fraud intelligence dashboard built for the **Bharat Bricks Hackathon 2026**. It empowers Indian bank compliance officers and RBI regulators with real-time insights into over 150,000+ UPI transactions and 5,000+ regulatory complaints.
 
-Built for **Techfest IIT Bombay 2025-26** — InsightX: Leadership Analytics challenge.
+![Project Preview](file:///C:/Users/Rishabh%20Kumar/.gemini/antigravity/brain/c074e07d-f4f6-47ba-a2c7-2a4fb1c3ad5c/test_dashboard_fixed_1774765787788.webp) (Replace with hosted image if available)
 
----
+## 🚀 Overview
 
-## What It Does
+Satark solves the "Compliance Lag" in Indian digital payments by bridging the gap between raw transaction data and complex regulatory frameworks (RBI/NPCI). It combines a high-performance analytics dashboard with a 3-layer RAG (Retrieval-Augmented Generation) pipeline powered by **Gemini 1.5 Flash**.
 
-BRAIN-DS lets business leaders query 250,000 UPI transactions using natural language — no SQL, no dashboards, no analyst queues. The system **writes and executes pandas code** to compute accurate statistics, then narrates findings in clear, executive-ready language.
-
-**Example queries the system handles:**
-- *"Which transaction type has the highest failure rate?"*
-- *"Compare failure rates for HDFC vs SBI on weekends"*
-- *"What are the peak transaction hours for food delivery?"*
-- *"Which age group uses P2P most frequently on weekends?"*
-- *"What percentage of high-value transactions are flagged for review?"*
-- *"Is there a relationship between network type and transaction success?"*
+### Key Capabilities:
+- **Live Intelligence Stream**: Real-time transaction monitoring and risk scoring.
+- **Scam Taxonomy Breakdown**: Identifying high-loss categories like Lottery, Investment, and Impersonation frauds.
+- **Regulatory AI Assist**: A chatbot trained on 8+ RBI Master Directions to provide instant compliance citations.
+- **TAT Harmonization**: Automatic tracking of turnaround times for failed transactions per RBI guidelines.
 
 ---
 
-## Architecture
+## 🏗️ Architecture
 
-BRAIN-DS is built on a **Code Interpreter** paradigm — the LLM generates code, not answers.
+Satark follows a modular **3-Layer Intelligence Pipeline** grouped into functional zones for maximum reliability and scalability.
 
+```mermaid
+graph TD
+    %% Styling
+    classDef ui fill:#f9f9fb,stroke:#4f46e5,stroke-width:2px,color:#1e1b4b,rx:10,ry:10;
+    classDef intelligence fill:#eff6ff,stroke:#3b82f6,stroke-width:2px,color:#1e3a8a,rx:10,ry:10;
+    classDef storage fill:#fff7ed,stroke:#f97316,stroke-width:2px,color:#7c2d12,rx:10,ry:10;
+    classDef action fill:#f0fdf4,stroke:#22c55e,stroke-width:2px,color:#14532d,rx:10,ry:10;
+
+    subgraph UserInterface ["Zone 1: User Interface (Next.js)"]
+        User((Compliance Officer))
+        Dashboard[Live Analytics Dashboard]
+        Chat[Satark AI Assist Chat]
+    end
+
+    subgraph IntelligenceHub ["Zone 2: Satark Intelligence Hub (FastAPI)"]
+        Router{Layer 1: Unified Router}
+        AgentA[Layer 2A: Analytics Agent]
+        AgentB[Layer 2B: Regulatory Agent]
+        Synthesizer[[Layer 3: Gemini 1.5 Flash Synthesizer]]
+    end
+
+    subgraph KnowledgeBase ["Zone 3: Multi-Modal Knowledge Base"]
+        GoldDB[(Databricks Gold Tables)]
+        VectorDB[(ChromaDB Vector Store)]
+        RBI_PDFs[/RBI Regulatory Corpus/]
+    end
+
+    %% Flows
+    User -->|Queries Dashboard| Dashboard
+    User -->|Natural Language| Chat
+    Chat --> Router
+    
+    Router -->|Analytics Intent| AgentA
+    Router -->|Compliance Intent| AgentB
+    
+    AgentA -->|Query| GoldDB
+    AgentB -->|Semantic Search| VectorDB
+    VectorDB --- RBI_PDFs
+    
+    AgentA -.->|Data Context| Synthesizer
+    AgentB -.->|Regulatory Citations| Synthesizer
+    
+    Synthesizer -->|Response + Diagnostics| Chat
+
+    %% Apply Classes
+    class User,Dashboard,Chat ui;
+    class Router,AgentA,AgentB,Synthesizer intelligence;
+    class GoldDB,VectorDB,RBI_PDFs storage;
 ```
-User Query
-  → Next.js UI
-  → FastAPI Backend
-  → Parallel Stage 1: Discovery
-      ├─ Agent #1: Code Planner (Deterministic Execution)
-      ├─ Agent #2: Logic Validator
-      ├─ Agent #3: Deep-Dive Researcher (Proactive Segmentation)
-      └─ Agent #4: Research Auditor
-  → Parallel Stage 2: Synthesis
-      └─ Agent #5: Narrative Architect (D-S-I-R Logic)
-  → Parallel Stage 3: Quality Audit
-      ├─ Agent #6: Structural Judge (5-Dimensional Audit)
-      └─ Agent #7: Contextual Predictor (Strategic Follow-ups)
-  → Final Executive Insight (D-S-I-R Narrative + KPI Cards)
-  → Next.js UI (Streaming SSE Updates)
-```
 
-All statistics come exclusively from pandas executing in a restricted sandbox — the LLM only writes the code and narrates the results.
-
-For a full technical breakdown of every module, design decision, and data flow see **[docs/architecture.md](docs/architecture.md)**.  
-For the query understanding methodology and EDA-derived baselines see **[docs/approach.md](docs/approach.md)**.
+### The 3-Layer Logic:
+1.  **Layer 1 (Router)**: Intelligently classifies queries into **Analytics** or **Regulatory** intents using keyword heuristics.
+2.  **Layer 2 (Specialized Agents)**: 
+    - **Zone A**: Accesses 5 specialized Gold tables (Geo Heatmap, Risk Distribution, Alert Effectiveness, etc.).
+    - **Zone B**: Performs sub-second vector search across indexed RBI Master Directions.
+3.  **Layer 3 (Synthesizer)**: Uses **Gemini 1.5 Flash** to synthesize agent metadata into a final, citation-backed response.
 
 ---
 
-## Project Structure
+## 🛠️ Tech Stack
 
-```
-insightx/
-├── api/
-│   └── main.py                  # FastAPI backend server
-├── frontend/                    # Next.js React frontend
-├── data/
-│   └── raw/                     # Dataset (gitignored — add locally)
-├── docs/
-│   ├── approach.md              # Query understanding & methodology
-│   └── architecture.md          # Full system architecture
-├── notebooks/
-│   └── EDA.ipynb                # Exploratory data analysis
-├── src/
-│   ├── __init__.py
-│   ├── agent.py                 # Orchestrator: parallelizes generate → execute → narrate
-│   ├── code_planner.py          # LLM code generation & narrative (Gemini 2.5 Flash)
-│   ├── sandbox.py               # Restricted code execution environment
-│   ├── judge.py                 # LLM-as-Judge validation (Gemini 2.5 Flash)
-│   ├── data_loader.py           # Data loading, caching, constants
-│   └── conversation_manager.py  # Conversation state & follow-up handling
-├── tests/
-│   ├── sample_queries.json      # 15 sample queries + responses
-│   ├── test_e2e.py              # End-to-end pipeline tests
-│   └── test_sandbox.py          # Sandbox security tests
-├── .env                         # API keys
-├── requirements.txt
-└── README.md
-```
+- **Frontend**: Next.js 14, React, Tailwind CSS, Recharts (Modern Dashboard Aesthetics).
+- **Backend**: FastAPI (Python), Uvicorn.
+- **AI/ML**: Google Gemini 1.5 Flash, Sentence Transformers (All-MiniLM-L6-v2).
+- **Data**: Databricks (SQL Warehouse), ChromaDB (Vector Store).
+- **Compliance Source**: 8+ RBI Master Directions on UPI/Digital Payments.
 
 ---
 
-## Setup & Installation
+## ⚙️ Setup & Installation
 
-### Prerequisites
+### 1. Prerequisites
 - Python 3.10+
-- The dataset CSV placed at `data/raw/upi_transactions_2024.csv`
+- Node.js 18+
+- Gemini API Key (Google AI Studio)
 
-### 1. Clone the repository
+### 2. Backend Setup
 ```bash
-git clone https://github.com/SirCoolerArc/InsightX.git
-cd InsightX
-```
-
-### 2. Create and activate a virtual environment
-```bash
-# Create
+cd satark/backend
+# Create & activate venv
 python -m venv venv
+.\venv\Scripts\activate
 
-# Activate — Windows
-venv\Scripts\Activate.ps1
+# Install dependencies
+pip install -r ../../requirements.txt
 
-# Activate — Mac/Linux
-source venv/bin/activate
+# Create .env file
+echo "GEMINI_API_KEY=your_key_here" > .env
 ```
 
-### 3. Install dependencies
+### 3. Initialize Knowledge Base (RAG)
 ```bash
-pip install -r requirements.txt
+# Ingest RBI Documents and CSV metadata into the Vector Store
+python setup_rag.py
 ```
 
-### 4. Configure Environment
-A `.env` file is already provided in the root directory. To run the application, simply add your **Gemini API Key** to it:
-```
-GEMINI_API_KEY=your_key_here
-```
-
-### 5. Add the dataset
-Place the CSV file at:
-```
-data/raw/upi_transactions_2024.csv
-```
-
-Or override the path via environment variable:
+### 4. Frontend Setup
 ```bash
-INSIGHTX_DATA_PATH=/path/to/your/file.csv
-```
-
-### 6. Run the application locally (For Evaluators)
-
-To run the application locally on an evaluation machine, you will need two separate terminal windows.
-
-**Prerequisites:**
-- Python 3.10+
-- Node.js 18+ and npm
-
-**Terminal 1: Start the Backend (FastAPI)**
-```bash
-# Ensure you are in the insightx directory with the virtual environment activated
-# Windows
-venv\Scripts\Activate.ps1
-# Mac/Linux
-source venv/bin/activate
-
-# Run the server
-python -m uvicorn api.main:app --port 8080
-```
-*The backend will boot up and load the dataset into memory. Wait until you see `Application startup complete`.*
-
-**Terminal 2: Start the Frontend (Next.js)**
-```bash
-# Open a new terminal and navigate to the frontend folder
-cd frontend
-
-# Install Node dependencies (only needed the first time)
+cd satark
 npm install
+```
 
-# Start the Next.js development server
+### 5. Running the Application
+**Terminal 1 (Backend):**
+```bash
+cd satark/backend
+python main.py
+```
+
+**Terminal 2 (Frontend):**
+```bash
+cd satark
 npm run dev
 ```
-*The application is now accessible at [http://localhost:3000](http://localhost:3000).*
+The application will be live at `http://localhost:3000`.
 
 ---
 
-## 🚀 Key Technological Breakthroughs
-
-### 1. The 7-Agent Parallel Orchestrator
-A high-concurrency orchestration layer that collapses complex reasoning into three parallel stages:
-*   **Discovery**: Concurrent Code Execution (Planner) + Proactive Research (Deep-Dive).
-*   **Synthesis**: Narrative Architect weaving multiple data streams via D-S-I-R logic.
-*   **Audit**: Concurrent Quality Judging (5-Dimensions) + Contextual Follow-up Prediction.
-
-### 2. Zero-Trust Code Interpreter Sandbox
-All insights are grounded in verified Python execution within a hardened sandbox:
-*   **Isolated Builtins**: Blocking non-essential Python functions (`eval`, `exec`, `import`).
-*   **Self-Healing**: Automated traceback reading and code patching (`MAX_RETRIES: 3`).
-*   **Memory Integrity**: Non-mutable dataset injection using `df.copy()`.
-
-### 3. Scientific Grounding (The Calibration Layer)
-*   **EDA Baseline Anchors**: Every insight is anchored to 14 pre-computed statistical constants.
-*   **Precision Adjectives**: Enforced adjective thresholds for deltas (Marginal < 0.5pp | Significant > 2pp).
-
-### 4. Visual Excellence
-*   **Real-time SSE Streaming**: Direct visibility into the agent's logic steps.
-*   **Native Chart Rendering**: Dynamic Bar/Line/Pie charts built via Recharts.
-*   **Masonry Insights Grid**: Context-rich UI cards for metrics, breakdowns, and anomalies.
+## 📊 Dataset Reference
+The system is built on a comprehensive dataset of **150,031 transactions** spanning:
+- 28 Indian States (Northeast focus for high-risk detection).
+- 7 Scam Types (KYC, Investment, Job, etc.).
+- 3 Risk Tiers (High, Medium, Low).
+- Real-time SLA monitoring for 5,000+ complaints across major Indian banks.
 
 ---
 
-##  Dataset Insights
-
-| Metric | Value |
-|---|---|
-| Total transactions | 250,000 |
-| Date range | Jan–Dec 2024 |
-| States covered | 10 |
-| Banks | 8 |
-| Overall failure rate | 4.95% |
-| Fraud flag rate | 0.19% (flagged for review, not confirmed fraud) |
-| High-value threshold (P90) | ₹3,236 |
-| Peak transaction hour | 19:00 |
-
----
-
-## 👥 Team
-
-Built by:  
-Rishabh Kumar | 24B2419  
-Subodh Patel | 24B2509  
-Dhruva Reddy | 24B2433  
-Abhijeet Singh | 24B2468  
-
----
-
-## 📌 Important Notes
-
-- **Data privacy:** The dataset is synthetic and does not contain real user data.
-- **Fraud flags:** `fraud_flag = 1` means flagged for automated review, not confirmed fraud.
-- **API costs:** Standard queries involve 3 parallel Gemini 2.5 Flash calls. The judge and follow-up steps add 4 more calls.
-- **Rate limits:** Built-in retry-with-backoff logic handles 429 errors.
-- **Sandbox security:** Generative code runs in a restricted environment with whitelisted builtins — no file I/O, no network, 30s timeout.
+## ⚖️ License
+This project was developed for the **Bharat Bricks Hackathon 2026**. All rights reserved.
