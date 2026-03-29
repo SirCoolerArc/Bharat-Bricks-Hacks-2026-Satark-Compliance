@@ -53,8 +53,8 @@ function isNightTransaction(timestamp: string | undefined): boolean {
  */
 export function buildFeatureVector(txn: TransactionInput): number[] {
   // Ensure we safely map the Next.js boolean flags to 1/0 integers for the ML model
-  const isNewDevice = txn.isNewDevice === true || txn.isNewDevice === "true" ? 1 : 0;
-  const isVpn = txn.isVpn === true || txn.isVpn === "true" ? 1 : 0;
+  const isNewDevice = txn.isNewDevice === true || String(txn.isNewDevice) === "true" ? 1 : 0;
+  const isVpn = txn.isVpn === true || String(txn.isVpn) === "true" ? 1 : 0;
   
   // NOTE: ipStateMatch isn't a feature in model_b_xgboost.pkl
   // The actual features are recipient details, velocity, amount, remark stats, and time.
@@ -97,9 +97,9 @@ export function buildFeatureVector(txn: TransactionInput): number[] {
 export function generateFlags(input: TransactionInput): string[] {
   const flags: string[] = [];
 
-  const isNewDevice = input.isNewDevice === true || input.isNewDevice === "true";
-  const isVpn = input.isVpn === true || input.isVpn === "true";
-  const ipStateMatch = input.ipStateMatch === true || input.ipStateMatch === "true";
+  const isNewDevice = input.isNewDevice === true || String(input.isNewDevice) === "true";
+  const isVpn = input.isVpn === true || String(input.isVpn) === "true";
+  const ipStateMatch = input.ipStateMatch === true || String(input.ipStateMatch) === "true";
 
   if (hasKYCKeyword(input.remark)) flags.push(`Remark matches KYC scam pattern`);
   if (hasPenaltyKeyword(input.remark)) flags.push(`Remark demands penalty or fine`);
