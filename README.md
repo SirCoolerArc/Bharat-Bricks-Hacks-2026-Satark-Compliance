@@ -6,7 +6,7 @@
 
 ## 🚀 Overview
 
-Satark solves the "Compliance Lag" in Indian digital payments by bridging the gap between raw transaction data and complex regulatory frameworks (RBI/NPCI). It combines a high-performance analytics dashboard with a 3-layer RAG (Retrieval-Augmented Generation) pipeline powered by **Gemini 1.5 Flash**.
+Satark solves the "Compliance Lag" in Indian digital payments by bridging the gap between raw transaction data and complex regulatory frameworks (RBI/NPCI). It combines a high-performance analytics dashboard with a 3-layer RAG (Retrieval-Augmented Generation) pipeline powered by **Gemini 25 Flash**.
 
 ### Key Capabilities:
 - **Live Intelligence Stream**: Real-time transaction monitoring and risk scoring.
@@ -79,6 +79,19 @@ graph TD
 
 ---
 
+## 🛠️ Strategic Engineering Decision: Why Next.js?
+
+While the **Bharat Bricks Hackathon** primary requirement involves Databricks, we made a strategic engineering decision to build our frontend using **Next.js** and **FastAPI** instead of native Databricks Lakehouse Apps. 
+
+### Key Blockers for Native Databricks Frontends:
+*   ❌ **Compute Dependency**: Databricks Lakehouse Apps require an active, attached cluster, which leads to significant and unnecessary cost overhead for simple visualization tasks.
+*   ❌ **Limited Framework Support**: Current support is primarily focused on **Streamlit/Gradio**. While excellent for internal ML experimentation, they lack the production-grade flexibility, performance, and custom UI/UX required for a state-of-the-art compliance dashboard.
+*   ❌ **Authentication & Portability**: Databricks identity management is optimized for internal organizational tools. Moving to a standalone **Vercel + Google Gemini** stack allows for a more portable, public-facing, and lightweight deployment suited for rapid regulatory intervention.
+
+**Integrated Approach**: We still leverage **Databricks SQL Warehouses** as our core source of truth for the Gold Tables via the **Databricks SQL Connector**, ensuring we maintain the power of the Lakehouse while providing a premium, independent user experience.
+
+---
+
 ## 🛠️ Tech Stack
 
 - **Frontend**: Next.js 14, React, Tailwind CSS, Recharts (Modern Dashboard Aesthetics).
@@ -139,7 +152,7 @@ The application will be live at `http://localhost:3000`.
 ---
 
 ## 📊 Dataset Reference
-The system is built on a comprehensive dataset of **150,031 transactions** spanning:
+The system is primarily built on a comprehensive dataset of **150,031 transactions** spanning:
 - 28 Indian States (Northeast focus for high-risk detection).
 - 7 Scam Types (KYC, Investment, Job, etc.).
 - 3 Risk Tiers (High, Medium, Low).
