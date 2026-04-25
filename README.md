@@ -164,13 +164,10 @@ While the **Bharat Bricks Hackathon** primary requirement involves Databricks, w
 
 ## 👥 Team
 
-This project was built jointly for the **Bharat Bricks Hackathon 2026** by:
-- **Rishabh Kumar** ([@SirCoolerArc](https://github.com/SirCoolerArc)) — Compliance Dashboard
-- **Neepun** ([@neepun06](https://github.com/neepun06)) — Consumer Protect
-
-The `apps/consumer-protect/` directory was integrated via `git subtree`, preserving the original commit history. The original repositories remain at:
-- https://github.com/SirCoolerArc/Bharat-Bricks-Hacks-2026-Satark-Compliance
-- https://github.com/neepun06/Bharat-Bricks-Hacks-2026-SATARK
+- Rishabh
+- Neepun
+- Dhruva
+- Dhruv
 
 ---
 
