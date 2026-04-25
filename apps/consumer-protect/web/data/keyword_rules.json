@@ -1,0 +1,86 @@
+{
+  "rules": [
+    {
+      "category": "KYC",
+      "keywords": [
+        "kyc", "verification fee", "penalty fee", "disconnection",
+        "aadhaar", "pan card", "update fee", "freeze", "account freeze",
+        "bijli", "electricity", "sim card", "sim kyc",
+        "bank kyc", "upi kyc", "wallet kyc", "meter kyc",
+        "broadband kyc", "dth kyc", "gas kyc", "lpg kyc"
+      ],
+      "riskLevel": "high",
+      "advice": "This looks like a KYC scam. No bank, utility, or telecom company will ask for KYC fees via UPI. Verify directly through the official app or by visiting the branch."
+    },
+    {
+      "category": "IMPERSONATION",
+      "keywords": [
+        "cbi", "income tax", "customs", "police", "court case",
+        "fir", "arrest", "warrant", "settlement fee", "penalty payment",
+        "enforcement", "trai", "rbi penalty", "sebi", "ed case",
+        "drug case", "cyber crime", "legal notice", "compliance fee",
+        "government penalty"
+      ],
+      "riskLevel": "critical",
+      "advice": "This message impersonates a government authority. No legitimate official will demand UPI payments or threaten arrest. Hang up and verify by calling the official helpline."
+    },
+    {
+      "category": "TECH_SUPPORT",
+      "keywords": [
+        "refund processing", "refund fee", "helpdesk", "tech support",
+        "amazon refund", "flipkart refund", "cashback processing",
+        "refund activation", "refund bounce", "customer care refund",
+        "otp verification refund", "toll free call refund",
+        "virus removal", "antivirus", "pc repair"
+      ],
+      "riskLevel": "high",
+      "advice": "This is a tech support scam. Genuine refunds never require you to pay a processing fee. Check your refund status on the official platform directly."
+    },
+    {
+      "category": "LOTTERY",
+      "keywords": [
+        "prize claim", "kbc", "lottery", "lucky draw", "winner fee",
+        "jackpot", "winning amount", "prize money", "bumper prize",
+        "scratch card prize", "inam", "jeet ka",
+        "prize verification", "prize delivery"
+      ],
+      "riskLevel": "high",
+      "advice": "This is a lottery scam. You cannot win a competition you did not enter. Legitimate contests never ask winners to pay fees via UPI."
+    },
+    {
+      "category": "INVESTMENT",
+      "keywords": [
+        "profit withdrawal", "trading account", "crypto withdrawal",
+        "stock market profit", "investment return", "forex", "demat",
+        "roi withdrawal", "telegram investment", "whatsapp trading",
+        "bitcoin withdrawal", "ethereum", "profit unlock",
+        "share market profit", "mutual fund withdrawal"
+      ],
+      "riskLevel": "critical",
+      "advice": "This appears to be an investment scam. Guaranteed high returns are a red flag. Only use SEBI-registered platforms and never pay 'withdrawal fees' through UPI."
+    },
+    {
+      "category": "JOB",
+      "keywords": [
+        "registration fee", "job placement", "training deposit",
+        "interview slot", "joining fee", "background check fee",
+        "placement fee", "offshore job", "visa processing fee",
+        "government job registration", "work from home registration",
+        "typing job", "data entry job fee", "naukri registration"
+      ],
+      "riskLevel": "medium",
+      "advice": "This looks like a job scam. Legitimate employers never charge applicants for registration, interviews, or background checks. Verify on official job portals."
+    },
+    {
+      "category": "EMERGENCY",
+      "keywords": [
+        "hospital deposit", "accident", "bail money", "emergency",
+        "medical help", "ambulance", "icu deposit", "operation advance",
+        "friend stuck", "wallet stolen", "purse lost", "phone lost",
+        "stranded", "relative hospital"
+      ],
+      "riskLevel": "high",
+      "advice": "This may be an emergency scam. Always verify by calling the person directly on their known number before transferring money. Scammers create urgency to prevent verification."
+    }
+  ]
+}

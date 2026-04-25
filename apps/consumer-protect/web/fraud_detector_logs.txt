@@ -1,0 +1,25 @@
+INFO:     Started server process [41260]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+Loading real model from /home/neepun/satark/web/src/lib/ml/model/model_b_xgboost.pkl...
+Model successfully loaded. Type: <class 'xgboost.sklearn.XGBClassifier'>
+Expected n_features: 22
+------------------------------------------
+Input features: [0.1, 4.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 3.0, -0.4, 0.0, 1.0, 0.0, 1.0, 0.0, 500.0, 1.0, 1.0, 50.0, 1.0, 10.0, 0.0]
+Input array shape: (1, 22)
+Raw proba: [[0.9781155  0.02188448]]
+Mapped output -> Score: 0.0219, Label: 0, Conf: 0.9781
+------------------------------------------
+INFO:     127.0.0.1:57418 - "POST /predict HTTP/1.1" 200 OK
+------------------------------------------
+Input features: [0.9, 20.0, 0.0, 1.0, 0.0, 0.0, 0.0, 50.0, 150.0, 6.0, 1.0, 1.0, 0.0, 1.0, 1.0, 1.0, 50.0, 1.0, 250000.0, 1.0, 55000.0, 0.0]
+Input array shape: (1, 22)
+Raw proba: [[7.0154667e-04 9.9929845e-01]]
+Mapped output -> Score: 0.9993, Label: 1, Conf: 0.9993
+------------------------------------------
+INFO:     127.0.0.1:57420 - "POST /predict HTTP/1.1" 200 OK
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [41260]
