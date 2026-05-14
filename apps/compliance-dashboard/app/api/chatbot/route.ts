@@ -31,6 +31,8 @@ export async function POST(req: NextRequest) {
     let dataTablesGenerated: string[] = [];
     let ragSourcesGenerated: any[] = [];
     let rowCountGenerated = 150031;
+    const thinkingSteps: string[] = [];
+    const toolTrace: { name: string; args: any }[] = [];
 
     if (reader) {
       let done = false;
@@ -47,11 +49,15 @@ export async function POST(req: NextRequest) {
                 try {
                   const event = JSON.parse(dataStr);
                   if (event.type === "meta") {
-                    dataTablesGenerated = event.data_tables_used || [];
-                    ragSourcesGenerated = event.rag_sources || [];
-                    rowCountGenerated = event.row_count || 150031;
+                    dataTablesGenerated = event.data_tables_used || dataTablesGenerated;
+                    ragSourcesGenerated = event.rag_sources || ragSourcesGenerated;
+                    rowCountGenerated = event.row_count || rowCountGenerated;
                   } else if (event.type === "text") {
                     completeText += event.content;
+                  } else if (event.type === "status") {
+                    if (event.content) thinkingSteps.push(event.content);
+                  } else if (event.type === "tool_used") {
+                    toolTrace.push({ name: event.name, args: event.args });
                   }
                 } catch (e) {
                   // ignore parse errors for partial chunks
@@ -64,21 +70,32 @@ export async function POST(req: NextRequest) {
     }
 
     // Reconstruct the JSON response for Next.js frontend ChatPanel.tsx
+    const insights =
+      toolTrace.length > 0
+        ? `Agent called ${toolTrace.length} tool${toolTrace.length === 1 ? "" : "s"}: ` +
+          toolTrace.map((t) => t.name).join(" → ")
+        : `Directly analysed ${dataTablesGenerated.join(", ") || "no specific table"}.`;
+
     const chatbotResult = {
       status: "success",
       data: {
         response: completeText,
-        sources: ragSourcesGenerated.map(s => ({
+        sources: ragSourcesGenerated.map((s: any) => ({
           doc_id: s.document_name,
           snippet: s.snippet,
-          score: s.similarity_score
+          score: s.similarity_score,
         })),
-        meta: dataTablesGenerated.length > 0 ? {
-          tables_queried: dataTablesGenerated,
-          row_count: rowCountGenerated,
-          insights_generated: `Directly analyzed ${dataTablesGenerated.join(', ')} for this query.`
-        } : null
-      }
+        meta:
+          dataTablesGenerated.length > 0 || thinkingSteps.length > 0
+            ? {
+                tables_queried: dataTablesGenerated,
+                row_count: rowCountGenerated,
+                insights_generated: insights,
+                thinking_steps: thinkingSteps,
+                tool_trace: toolTrace,
+              }
+            : null,
+      },
     };
 
     return NextResponse.json(chatbotResult);

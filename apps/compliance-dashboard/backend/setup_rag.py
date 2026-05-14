@@ -13,7 +13,8 @@ except ImportError:
 # Config
 DATA_DIR = os.path.join(os.path.dirname(__file__), "data")
 DOCS_DIR = os.path.join(DATA_DIR, "rbi_docs")
-CHROMA_DB_DIR = os.path.join(DATA_DIR, "chroma_db")
+# IMPORTANT: must match CHROMA_PERSIST_DIR in config.py so the API reads what we index here.
+CHROMA_DB_DIR = os.path.join(os.path.dirname(__file__), "vectorstore", "chroma_db")
 EMBEDDING_MODEL = "all-MiniLM-L6-v2"
 CHUNK_SIZE_WORDS = 500
 CHUNK_OVERLAP_WORDS = 50
@@ -135,13 +136,13 @@ def process_pdfs():
                     metadatas=metadatas
                 )
                 
-                print(f"✓ Embedded {len(chunks)} chunks for '{filename}'")
+                print(f"[OK] Embedded {len(chunks)} chunks for '{filename}'")
                 total_chunks += len(chunks)
             else:
-                print(f"⚠ Skipping '{filename}' (no extractable text)")
-                
+                print(f"[WARN] Skipping '{filename}' (no extractable text)")
+
         except Exception as e:
-            print(f"❌ Error processing '{filename}': {e}")
+            print(f"[ERR] Error processing '{filename}': {e}")
             
     return total_chunks
 
@@ -177,7 +178,7 @@ def process_hardcoded_facts():
             documents=docs,
             metadatas=metadatas
         )
-        print(f"✓ Embedded {len(docs)} chunks across {len(HARDCODED_DOCS)} synthetic rules.")
+        print(f"[OK] Embedded {len(docs)} chunks across {len(HARDCODED_DOCS)} synthetic rules.")
         return len(docs)
     return 0
 
@@ -277,7 +278,7 @@ def process_csv_summaries():
         total_embedded = len(ids)
                 
     if total_embedded > 0:
-        print(f"✓ Embedded {total_embedded} CSV summary chunks.")
+        print(f"[OK] Embedded {total_embedded} CSV summary chunks.")
     return total_embedded
 
 

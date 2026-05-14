@@ -111,6 +111,22 @@ function AnalyticsPanel({ meta }: { meta: any }) {
               {meta.insights_generated || "Successfully synthesized aggregated context from layer 2A."}
             </p>
           </div>
+          {meta.thinking_steps && meta.thinking_steps.length > 0 && (
+            <div className="space-y-1.5 mt-3">
+              <p className="text-[8px] uppercase text-text-muted font-bold">Agent Steps</p>
+              <ol className="space-y-1">
+                {meta.thinking_steps.map((step: string, i: number) => (
+                  <li
+                    key={i}
+                    className="text-[10px] text-text-secondary leading-normal bg-white/40 px-2 py-1 rounded-md border border-white/60 flex gap-2"
+                  >
+                    <span className="text-text-muted font-bold">{i + 1}.</span>
+                    <span>{step}</span>
+                  </li>
+                ))}
+              </ol>
+            </div>
+          )}
         </div>
       )}
     </div>

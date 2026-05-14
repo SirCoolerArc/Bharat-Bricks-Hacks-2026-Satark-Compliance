@@ -1,6 +1,6 @@
 """
 Layer 3 — Synthesizer
-Combines data context + RAG context + user query, calls Claude API.
+Combines data context + RAG context + user query, calls Gemini API.
 Supports streaming SSE responses.
 """
 
@@ -51,7 +51,7 @@ def _build_messages(
     user_message: str,
     history: list[dict] | None = None,
 ) -> list[dict]:
-    """Build the messages array for Claude, including conversation history."""
+    """Build the messages array for Gemini, including conversation history."""
     contents = []
     if history:
         for msg in history[-10:]:  # Keep last 10 turns to manage context window
@@ -70,7 +70,7 @@ async def synthesize_streaming(
     history: list[dict] | None = None,
 ) -> AsyncGenerator[str, None]:
     """
-    Call Claude API with streaming and yield text chunks as they arrive.
+    Call Gemini API with streaming and yield text chunks as they arrive.
     Used for SSE responses.
     """
     if not GEMINI_API_KEY:

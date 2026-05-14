@@ -1,6 +1,6 @@
 """
 SATARK — FastAPI Chatbot Backend
-3-Layer Query Pipeline: Router → Data/RAG Agents → Claude Synthesis
+Tool-using orchestrator agent over gold tables + RBI / NPCI regulatory corpus, driven by Gemini 2.5 Flash function-calling.
 
 Endpoints:
   POST /api/chat          — Streaming SSE chat responses
@@ -18,10 +18,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 
-from agents.router import classify_query, QueryType
-from agents.data_agent import get_data_context
-from agents.rag_agent import retrieve_regulatory_context
-from agents.synthesizer import synthesize_streaming
+from agents.orchestrator import run_orchestrator
 from data.gold_tables import get_dashboard_kpi
 
 # ── Logging ───────────────────────────────────────────────────────
@@ -138,66 +135,44 @@ async def analytics_data(request: dict):
 @app.post("/api/chat")
 async def chat(request: ChatRequest):
     """
-    Main chat endpoint — executes the 3-layer pipeline:
-    1. Route the query
-    2. Fetch data context and/or regulatory context
-    3. Stream synthesized response via SSE
+    Main chat endpoint — drives the tool-using orchestrator agent.
+    Streams SSE events as the agent classifies, calls tools, and writes
+    the final answer.
     """
     message = request.message.strip()
     if not message:
         raise HTTPException(status_code=400, detail="Message cannot be empty")
 
     history = [{"role": m.role, "content": m.content} for m in (request.history or [])]
+    logger.info(f"Query: '{message[:80]}...'")
 
-    # ── Layer 1: Classify ─────────────────────────────────────────
-    query_type = classify_query(message)
-    logger.info(f"Query: '{message[:80]}...' → Type: {query_type.value}")
-
-    # ── Layer 2: Fetch context ────────────────────────────────────
-    data_context = ""
-    data_tables = []
-    rag_context = ""
-    rag_sources = []
-
-    if query_type in (QueryType.DATA, QueryType.HYBRID):
-        data_context, data_tables = await asyncio.to_thread(get_data_context, message)
-        logger.info(f"Data context loaded ({len(data_context)} chars, {len(data_tables)} tables)")
-
-    if query_type in (QueryType.REGULATORY, QueryType.HYBRID):
-        rag_context, rag_sources = await asyncio.to_thread(retrieve_regulatory_context, message)
-        logger.info(f"RAG context retrieved ({len(rag_context)} chars, {len(rag_sources)} sources)")
-
-    # For pure DATA queries, still include minimal regulatory context
-    if query_type == QueryType.DATA and not rag_context:
-        rag_context = "No specific regulatory context requested."
-
-    # For pure REGULATORY queries, still include summary data context
-    if query_type == QueryType.REGULATORY and not data_context:
-        data_context = (
-            "Summary: 150,031 total UPI transactions, 11,766 fraud (7.84%). "
-            "5,000 complaints filed, 25.2% resolved, avg 45.5 days."
-        )
-
-    # ── Layer 3: Stream response via SSE ──────────────────────────
     async def event_stream():
-        # Send metadata event first
-        meta = {
+        # Opening meta event so the chatbot route can populate diagnostics
+        # incrementally as tools fire.
+        opening = {
             "type": "meta",
-            "query_type": query_type.value,
-            "data_tables_used": data_tables,
-            "rag_sources": rag_sources,
-            "row_count": 150031, # Total dataset size for context
+            "data_tables_used": [],
+            "rag_sources": [],
+            "row_count": 150031,
         }
-        yield f"data: {json.dumps(meta)}\n\n"
+        yield f"data: {json.dumps(opening)}\n\n"
 
-        # Stream text chunks
-        async for chunk in _async_wrap_streaming(
-            message, data_context, rag_context, history
-        ):
-            payload = {"type": "text", "content": chunk}
-            yield f"data: {json.dumps(payload)}\n\n"
+        tables_used: list[str] = []
+        rag_sources: list[dict] = []
 
-        # Send done event
+        async for event in _drive_orchestrator(message, history):
+            etype = event.get("type")
+
+            if etype == "tables_used":
+                tables_used = event.get("tables", [])
+                # Emit an updated meta so the frontend sees what tools touched.
+                yield f"data: {json.dumps({'type': 'meta', 'data_tables_used': tables_used, 'rag_sources': rag_sources, 'row_count': 150031})}\n\n"
+            elif etype == "rag_sources":
+                rag_sources = event.get("sources", [])
+                yield f"data: {json.dumps({'type': 'meta', 'data_tables_used': tables_used, 'rag_sources': rag_sources, 'row_count': 150031})}\n\n"
+            else:
+                yield f"data: {json.dumps(event)}\n\n"
+
         yield f"data: {json.dumps({'type': 'done'})}\n\n"
 
     return StreamingResponse(
@@ -206,20 +181,16 @@ async def chat(request: ChatRequest):
         headers={
             "Cache-Control": "no-cache",
             "Connection": "keep-alive",
-            "X-Query-Type": query_type.value,
         },
     )
 
 
-async def _async_wrap_streaming(
-    message: str,
-    data_context: str,
-    rag_context: str,
-    history: list[dict],
-):
+async def _drive_orchestrator(message: str, history: list[dict]):
     """
-    Wrap the synchronous Anthropic streaming into async generator.
-    The Anthropic SDK uses sync streaming, so we run it in a thread.
+    Bridge the orchestrator's sync Gemini calls into the FastAPI async loop.
+    The orchestrator itself is an async generator but its inner Gemini calls
+    are blocking — we offload each step into a thread via asyncio.to_thread
+    indirectly by running the generator on the default event loop.
     """
     import queue
     import threading
@@ -227,70 +198,33 @@ async def _async_wrap_streaming(
     q: queue.Queue = queue.Queue()
     sentinel = object()
 
-    def _run_sync():
+    def _run():
         try:
-            # synthesize_streaming is actually a sync generator despite the name
-            # We need to handle it properly
-            from google import genai
-            from google.genai import types
-            from config import GEMINI_API_KEY, GEMINI_MODEL, MAX_RESPONSE_TOKENS
-            from agents.synthesizer import _build_system_prompt, _build_messages, _generate_fallback_response
+            import asyncio as _asyncio
 
-            if not GEMINI_API_KEY:
-                # Silently fall back to cached analysis for flawless judging/demo experience
-                q.put(_generate_fallback_response(message, data_context))
-                q.put(sentinel)
-                return
+            async def _collect():
+                async for ev in run_orchestrator(message, history):
+                    q.put(ev)
 
-            system = _build_system_prompt(data_context, rag_context)
-            contents = _build_messages(message, history)
-
-            try:
-                client = genai.Client(api_key=GEMINI_API_KEY)
-                response = client.models.generate_content_stream(
-                    model=GEMINI_MODEL,
-                    contents=contents,
-                    config=types.GenerateContentConfig(
-                        system_instruction=system,
-                        max_output_tokens=MAX_RESPONSE_TOKENS,
-                        temperature=0.0
-                    )
-                )
-                for chunk in response:
-                    if chunk.text:
-                        q.put(chunk.text)
-            except Exception as e:
-                logger.error(f"Gemini API error: {e}")
-                # Silently fall back to cached analysis for flawless judging/demo experience
-                q.put(_generate_fallback_response(message, data_context))
+            _asyncio.run(_collect())
+        except Exception as e:
+            logger.exception("Orchestrator crashed")
+            q.put({"type": "text", "content": f"Internal error: {e}"})
         finally:
             q.put(sentinel)
 
-    thread = threading.Thread(target=_run_sync, daemon=True)
-    thread.start()
+    threading.Thread(target=_run, daemon=True).start()
 
     while True:
-        # Poll the queue with a short timeout to stay async-friendly
-        while True:
-            try:
-                item = q.get_nowait()
-                break
-            except queue.Empty:
-                await asyncio.sleep(0.02)
-                continue
+        try:
+            item = q.get_nowait()
+        except queue.Empty:
+            await asyncio.sleep(0.02)
+            continue
 
         if item is sentinel:
-            break
+            return
         yield item
-
-
-def _count_tables(data_context: str) -> int:
-    """Count how many gold tables are included in the data context."""
-    if not data_context:
-        return 0
-    table_names = ["geo_heatmap", "risk_distribution", "scam_taxonomy",
-                   "alert_effectiveness", "hourly_fraud_pattern"]
-    return sum(1 for t in table_names if t in data_context)
 
 
 # ── Run ───────────────────────────────────────────────────────────

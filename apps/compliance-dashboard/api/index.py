@@ -1,6 +1,6 @@
 """
 SATARK — FastAPI Chatbot Backend
-3-Layer Query Pipeline: Router → Data/RAG Agents → Claude Synthesis
+3-Layer Query Pipeline: Router → Data/RAG Agents → Gemini Synthesis
 
 Endpoints:
   POST /api/chat          — Streaming SSE chat responses
@@ -223,8 +223,7 @@ async def _async_wrap_streaming(
     history: list[dict],
 ):
     """
-    Wrap the synchronous Anthropic streaming into async generator.
-    The Anthropic SDK uses sync streaming, so we run it in a thread.
+    Wrap the synchronous Gemini streaming into an async generator.
     """
     import queue
     import threading

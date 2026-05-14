@@ -34,4 +34,11 @@ crash_debug*.txt
 test_*.py
 test_rag_fix.py
 test_router_fast.py
-tmp/
+tmp/
+
+# --- Logs ---
+*_logs.txt
+*.log
+
+# --- Private documentation (interview prep, personal notes) ---
+docs/interview-prep.md
